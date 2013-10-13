@@ -149,7 +149,7 @@ int main(void) {
     // Create basic values on the stack
 
     // We'll use this to keep info about the database
-    // We'll also write the info to the end of out database file
+    // We'll also write the `info` to the end of our database file
     DatabaseInfo info; 
 
 
