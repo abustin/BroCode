@@ -1,7 +1,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
-//#include <SDL2/SDL_opengles.h>
-//#include <SDL_opengl.h>
+#ifdef USE_ES2
+#include <SDL2/SDL_opengles.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -13,6 +14,7 @@ typedef struct RenderData {
     float tick;
     float alpha;
     float setalpha;
+    int vSync;
     GLuint vertBufferId;
     GLuint texBufferId;
     GLuint texCoordLocation;
@@ -366,7 +368,11 @@ int loop( RenderData *rd) {
     rd->tick++;
     draw(rd);
     SDL_GL_SwapWindow(window);
-
+    
+    if (rd->vSync == -1) {
+        SDL_Delay(15);
+    }
+    
     return 1;
 
 }
@@ -388,11 +394,11 @@ void setup(RenderData *rd) {
     glClearColor( 0.1, 0.1, 0.1, 1.0 );
     glEnable(GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
     glViewport(0, 0, WIDTH, HEIGHT);
     makeProgram(rd);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetSwapInterval(1);
+    rd->vSync = SDL_GL_SetSwapInterval(1);
+
 
 }
 
