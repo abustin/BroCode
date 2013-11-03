@@ -54,6 +54,30 @@ void searchCarByMake(char *carMake) {
 
 }
 
+void searchCarByYear(short year) {
+
+    int idx =0;
+    Car car;
+    FILE *fd = fopen("cars.db","r");
+    
+    while(1) {
+        fseek(fd,sizeof(Car)*idx,SEEK_SET);
+        size_t numRead = fread(&car,sizeof(Car),1,fd);
+        
+        if (numRead == 0) {
+            printf("Search finished at idx %i\n", idx);
+            break;
+        } else if (car.year > year) {
+            printf("Found ..");
+            printCar(&car);
+        }
+
+        idx++;
+    }
+    fclose(fd); 
+
+}
+
 void listAllCars() {
 
     printf("Listing all the cars!\n");
@@ -105,12 +129,13 @@ void readDatabaseInfo(DatabaseInfo *info) {
     if (fd!=NULL) {
         fseek(fd,-sizeof(DatabaseInfo),SEEK_END);
         numRead = fread(info,sizeof(DatabaseInfo),1,fd);
+        fclose(fd); 
     }
     if (numRead == 0) {
         info->size = 0;
     }
     
-    fclose(fd); 
+    
     
 }
 
@@ -211,6 +236,21 @@ int main(void) {
             // When we've gotten all the car info, we'll send a pointer of myCar to writeCar
             // We'll also send a pointer to the database info so we can update the database size
             writeCar(&info, &myCar);
+
+        } else if (strcmp("year", buff) == 0) {
+            
+            if (info.size > 0) {
+
+                printf ("Newer than?\n");
+                
+                short yearInput;
+                scanf("%hu",&yearInput);
+                searchCarByYear(yearInput);
+            } else {
+                printf("\nDatabase is currently Empty\n");
+            }
+
+            
 
         } else if (strcmp("search", buff) == 0) { // user said `search`
 
